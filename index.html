@@ -2,20 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Modern Camera App</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #1a1a1a;
-            --surface-color: rgba(40, 40, 40, 0.75);
-            --border-color: rgba(255, 255, 255, 0.1);
+            --bg-color: #000;
+            --surface-color: rgba(25, 25, 25, 0.7);
+            --border-color: rgba(255, 255, 255, 0.2);
             --text-color: #f0f0f0;
             --text-secondary-color: #a0a0a0;
-            --accent-primary: #00f2ea;
-            --accent-secondary: #ff007f;
+            --accent-primary: #9370DB; /* Medium Purple */
+            --accent-secondary: #FF00FF; /* Magenta */
             --danger-color: #ff3b30;
             --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
@@ -26,54 +26,29 @@
             padding: 0;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+        }
+
         body {
             font-family: var(--font-family);
-            background-color: var(--bg-color);
             color: var(--text-color);
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 1rem;
-            min-height: 100vh;
         }
 
-        .container {
-            max-width: 1400px;
+        .camera-app-container {
             width: 100%;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 2rem;
-        }
-
-        .main-content {
-            flex: 3;
-            min-width: 320px;
-        }
-
-        .sidebar {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        h1, h2 {
-            text-align: center;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-        
-        h2 {
-            font-size: 1.25rem;
-            opacity: 0.9;
-        }
-
-        .camera-view {
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            height: 100%;
             position: relative;
-            width: 100%;
-            aspect-ratio: 16/9;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #video-preview {
@@ -93,11 +68,13 @@
             display: none; justify-content: center; align-items: center;
             font-size: 10rem; color: rgba(255, 255, 255, 0.9); font-weight: 600;
             -webkit-text-stroke: 2px black; text-shadow: 0 0 20px black;
+            z-index: 10;
         }
         
         .grid-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; display: none;
+            z-index: 5;
         }
         
         .grid-overlay.visible {
@@ -110,95 +87,56 @@
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
         
-        .glass-panel {
-            background: var(--surface-color);
-            padding: 1.5rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-            margin-top: 1.5rem;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        .controls-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 20;
         }
 
-        .control-group {
-            margin-bottom: 1.25rem;
-        }
-        
-        .control-group:last-child {
-            margin-bottom: 0;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            font-size: 0.9rem;
-            color: var(--text-secondary-color);
-        }
-
-        select, input[type="text"] {
+        .top-bar, .bottom-bar {
             width: 100%;
-            padding: 0.75rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background-color: rgba(0,0,0,0.2);
-            color: var(--text-color);
-            font-family: var(--font-family);
-            font-size: 1rem;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            pointer-events: auto;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
         }
-        
-        select:focus, input[type="text"]:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(0, 242, 234, 0.2);
+        .bottom-bar {
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            justify-content: space-around;
+        }
+        .top-bar {
+            justify-content: flex-end;
+            gap: 1rem;
         }
 
-        button {
-            background: transparent;
+        .icon-button {
+            background: rgba(25, 25, 25, 0.5);
             border: 1px solid var(--border-color);
             color: var(--text-color);
             cursor: pointer;
-            font-family: var(--font-family);
-            font-size: 1rem;
-            font-weight: 500;
             transition: all 0.2s ease;
-            border-radius: 8px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1rem;
+            width: 44px;
+            height: 44px;
+            padding: 0;
         }
-        
-        button:hover:not(:disabled) {
-            background-color: var(--accent-primary);
-            border-color: var(--accent-primary);
-            color: #000;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 242, 234, 0.2);
+        .icon-button.active, .icon-button:hover:not(:disabled) {
+            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(147, 112, 219, 0.4);
         }
-        
-        button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        
-        button svg {
-            width: 24px;
-            height: 24px;
-            stroke-width: 2;
-            stroke: currentColor;
-            fill: none;
-        }
-        
-        .primary-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1rem 0;
-        }
+        .icon-button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .icon-button svg { width: 24px; height: 24px; stroke-width: 2; stroke: currentColor; fill: none; }
         
         #capture-photo {
             width: 70px;
@@ -207,11 +145,15 @@
             background-color: #fff;
             border: 4px solid var(--bg-color);
             box-shadow: 0 0 0 4px #fff;
+            transition: transform 0.2s;
+            animation: pulse-capture 2s infinite;
         }
-        
-        #capture-photo:hover:not(:disabled) {
-            transform: scale(1.05);
+        @keyframes pulse-capture {
+            0% { box-shadow: 0 0 0 4px #fff; }
+            70% { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+            100% { box-shadow: 0 0 0 4px rgba(255,255,255,0); }
         }
+        #capture-photo:hover:not(:disabled) { transform: scale(1.05); }
         
         #record-video {
             width: 50px;
@@ -222,90 +164,96 @@
             border: 3px solid var(--accent-secondary);
             color: var(--accent-secondary);
         }
-        #record-video.recording {
-             background-color: var(--accent-secondary);
-        }
-        
-        #switch-camera {
+        #record-video.recording { background-color: var(--accent-secondary); }
+
+        #gallery-thumbnail-btn {
             width: 50px;
             height: 50px;
             padding: 0;
             border-radius: 50%;
+            border: 2px solid #fff;
+            overflow: hidden;
+            background-color: rgba(25,25,25,0.5);
         }
-
-        #error-message, #qr-result {
-            padding: 1rem; border-radius: 8px; margin-bottom: 1rem;
+        #gallery-thumbnail-btn img { width: 100%; height: 100%; object-fit: cover; }
+        
+        #error-message {
+            position: absolute; top: 60px; left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem; border-radius: 8px;
             text-align: center; display: none; word-wrap: break-word;
+            color: #fff; background-color: rgba(255, 59, 48, 0.8);
+            z-index: 100;
         }
         
-        #error-message { color: #fff; background-color: rgba(255, 59, 48, 0.5); }
-        #qr-result { color: var(--text-color); background-color: rgba(0, 242, 234, 0.2); }
-        #qr-result a { color: var(--accent-primary); }
+        #qr-result {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 1rem; border-radius: 8px;
+            text-align: center; display: none; word-wrap: break-word;
+            color: var(--text-color); background-color: rgba(147, 112, 219, 0.8);
+            z-index: 100;
+        }
+        #qr-result a { color: #fff; text-decoration: underline; }
         
-        .preview-area {
-            width: 100%; aspect-ratio: 16/9; background-color: rgba(0,0,0,0.2);
-            border: 2px dashed var(--border-color); border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-secondary-color); margin-bottom: 1.5rem; overflow: hidden;
-        }
-        
-        #photo-preview {
-            width: 100%; height: 100%; object-fit: contain; display: none;
-        }
-
-        #gallery {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-            gap: 1rem; min-height: 70px;
-        }
-
-        .thumbnail-container {
-            position: relative;
-        }
-
-        .thumbnail {
-            width: 100%; aspect-ratio: 1/1; object-fit: cover;
-            border-radius: 8px; cursor: pointer;
-            border: 2px solid transparent; transition: all 0.2s;
-        }
-        
-        .thumbnail:hover {
-            border-color: var(--text-secondary-color);
-        }
-
-        .thumbnail.featured {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 12px rgba(0, 242, 234, 0.5);
-        }
-        
-        .delete-btn {
-            position: absolute; top: 4px; right: 4px;
-            background-color: rgba(255, 59, 48, 0.8);
-            border: none; border-radius: 50%;
-            width: 24px; height: 24px; padding: 0;
-            opacity: 0; transition: opacity 0.2s;
-        }
-        
-        .thumbnail-container:hover .delete-btn {
-            opacity: 1;
-        }
-        
-        .delete-btn:hover {
-            background-color: var(--danger-color);
-        }
-        
-        .status-indicator {
+        #status-indicator {
             position: absolute; top: 1rem; left: 1rem;
             background-color: var(--danger-color); color: white;
             padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.9em;
             display: none; align-items: center; animation: pulse 1.5s infinite;
+            z-index: 10;
         }
         
-        @keyframes pulse {
-            0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; }
-        }
-        
-        #zoom-control, #exposure-control { display: none; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
 
+        /* --- Modal Styles --- */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+        .modal.visible { opacity: 1; visibility: visible; }
+
+        .modal-content {
+            background: var(--surface-color);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .modal.visible .modal-content { transform: scale(1); }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.5rem; flex-shrink: 0;
+        }
+        .modal-header h2 { margin: 0; }
+        #modal-close-btn, #gallery-close-btn { background: none; border: none; }
+        
+        .modal-body { overflow-y: auto; }
+
+        label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; color: var(--text-secondary-color); }
+        select, input[type="text"] {
+            width: 100%; padding: 0.75rem; border-radius: 8px;
+            border: 1px solid var(--border-color); background-color: rgba(0,0,0,0.2);
+            color: var(--text-color); font-family: var(--font-family); font-size: 1rem;
+        }
+        select:focus, input[type="text"]:focus {
+            outline: none; border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.2);
+        }
+        
         input[type=range] {
             -webkit-appearance: none; width: 100%; background: transparent;
         }
@@ -318,120 +266,113 @@
             -webkit-appearance: none; height: 20px; width: 20px;
             border-radius: 50%; background: var(--accent-primary);
             cursor: pointer; margin-top: -7px; 
-            box-shadow: 0 0 8px rgba(0, 242, 234, 0.5);
+            box-shadow: 0 0 8px rgba(147, 112, 219, 0.5);
         }
-        
+
+        .control-group { margin-bottom: 1.25rem; }
+        .control-group:last-child { margin-bottom: 0; }
         .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-
-        .button-grid-tri { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
-
-        .ai-button {
-            background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
-            color: #000;
-            border: none;
+        .button-grid button, .control-group button {
+             background: rgba(255, 255, 255, 0.1);
+             border: 1px solid var(--border-color);
+        }
+        .button-grid button:hover, .control-group button:hover {
+             background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
+             color: #fff;
+             border-color: transparent;
         }
 
-        .ai-button:hover:not(:disabled) {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 16px rgba(0, 242, 234, 0.2), 0 6px 16px rgba(255, 0, 127, 0.2);
-        }
 
-        /* --- AI Modal Styles --- */
-        #ai-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.6);
-            display: none; justify-content: center; align-items: center;
-            z-index: 1000; padding: 1rem;
-        }
+        /* --- Gallery Modal Specifics --- */
+        #gallery-modal .modal-content { max-width: 90vw; }
+        .gallery-body { display: flex; gap: 1.5rem; flex-grow: 1; min-height: 0; }
 
-        #ai-modal.visible {
+        .gallery-preview-container {
+            flex: 3;
             display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
-
-        .ai-modal-content {
-            background: var(--surface-color);
-            padding: 2rem;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+        #gallery-preview-area {
             width: 100%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
+            flex-grow: 1;
+            background-color: rgba(0,0,0,0.2);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-secondary-color); overflow: hidden;
         }
+        #gallery-preview-img { width: 100%; height: 100%; object-fit: contain; display: none; }
 
-        #ai-modal-close {
-            position: absolute; top: 1rem; right: 1rem;
-            background: transparent; border: none;
-            color: var(--text-secondary-color);
-            width: 32px; height: 32px; padding: 0;
+        #gallery-grid-container {
+            flex: 1; min-width: 200px;
+            display: flex; flex-direction: column;
         }
-        
-         #ai-modal-close:hover {
-            color: var(--text-color);
-            background: rgba(255,255,255,0.1);
+        #gallery-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 1rem; overflow-y: auto;
         }
-
-        #ai-modal-title {
-            margin-bottom: 1rem; margin-top: 0;
-            text-align: left;
+        .thumbnail-container { position: relative; }
+        .thumbnail {
+            width: 100%; aspect-ratio: 1/1; object-fit: cover;
+            border-radius: 8px; cursor: pointer;
+            border: 2px solid transparent; transition: all 0.2s;
         }
-
-        #ai-modal-body {
-            line-height: 1.6;
-            white-space: pre-wrap;
+        .thumbnail:hover { border-color: var(--text-secondary-color); }
+        .thumbnail.featured { border-color: var(--accent-primary); box-shadow: 0 0 12px rgba(147, 112, 219, 0.5); }
+        .delete-btn {
+            position: absolute; top: 4px; right: 4px;
+            background-color: rgba(255, 59, 48, 0.8);
+            border: none; border-radius: 50%;
+            width: 24px; height: 24px; padding: 0;
+            opacity: 0; transition: opacity 0.2s;
+            color: #fff;
         }
-
-        #ai-modal-body p { margin-bottom: 0.5rem; }
-        #ai-modal-body strong { color: var(--accent-primary); }
-
-        .loader {
-            width: 50px; height: 50px;
-            border: 5px solid var(--border-color);
-            border-bottom-color: var(--accent-primary);
-            border-radius: 50%;
-            display: inline-block;
-            animation: rotation 1s linear infinite;
-        }
-
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .thumbnail-container:hover .delete-btn { opacity: 1; }
+        .delete-btn:hover { background-color: var(--danger-color); }
 
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Main content area for camera preview and primary controls -->
-        <div class="main-content">
-            <div id="error-message"></div>
-            
-            <div class="camera-view">
-                <div id="grid-overlay" class="grid-overlay">
-                    <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
-                </div>
-                <div id="countdown-overlay"></div>
-                <div id="status-indicator" class="status-indicator">REC</div>
-                <video id="video-preview" autoplay playsinline></video>
-                <canvas id="canvas-capture" style="display:none;"></canvas>
-            </div>
+    <div class="camera-app-container">
+        <video id="video-preview" autoplay playsinline></video>
+        <canvas id="canvas-capture" style="display:none;"></canvas>
 
-            <div class="primary-controls">
-                <button id="switch-camera" title="Switch Camera">
-                    <svg viewBox="0 0 24 24"><path d="M1 12C1 14.1565 1.77678 16.2239 3.14923 17.7495M1 12C1 9.84346 1.77678 7.77611 3.14923 6.25052M1 12H2M23 12C23 14.1565 22.2232 16.2239 20.8508 17.7495M23 12C23 9.84346 22.2232 7.77611 20.8508 6.25052M23 12H22M12 23C14.1565 23 16.2239 22.2232 17.7495 20.8508M12 23C9.84346 23 7.77611 22.2232 6.25052 20.8508M12 23V22M12 1C14.1565 1 16.2239 1.77678 17.7495 3.14923M12 1C9.84346 1 7.77611 1.77678 6.25052 3.14923M12 1V2M9 16.5V13.5M9 13.5H12M9 13.5L13 9.5M15 7.5V10.5M15 10.5H12M15 10.5L11 14.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </button>
-                <button id="capture-photo" title="Capture Photo"></button>
-                <button id="record-video" title="Record Video">
-                     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="currentColor"></circle></svg>
-                </button>
+        <!-- Overlays -->
+        <div id="grid-overlay" class="grid-overlay">
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        </div>
+        <div id="countdown-overlay"></div>
+        <div id="status-indicator" class="status-indicator">REC</div>
+        <div id="error-message"></div>
+        <div id="qr-result"></div>
+
+        <div class="controls-overlay">
+            <div class="top-bar">
+                <button id="toggle-grid" class="icon-button" title="Toggle Grid"><svg viewBox="0 0 24 24"><path d="M3 3H21M3 9H21M3 15H21M3 21V3M9 21V3M15 21V3M21 21V3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="mirror-video" class="icon-button" title="Mirror Video"><svg viewBox="0 0 24 24"><path d="M10.0002 19L10 16M10.0002 5L10 8M10.0002 12L3 12M10.0002 12L17 12M6 8L3 12L6 16M14 16L17 12L14 8M21 3V21" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="toggle-torch" class="icon-button" title="Toggle Torch" style="display: none;"><svg viewBox="0 0 24 24"><path d="M9.17157 14.8284L14.8284 9.17157M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="toggle-qr-scan" class="icon-button" title="Scan QR Code"><svg viewBox="0 0 24 24"><path d="M4 4H8V8H4V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16H8V20H4V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 4H20V8H16V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16H20V20H16V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 4V8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 16V20" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10H6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 10H20" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 12V14" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10H16" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12V14" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="settings-btn" class="icon-button" title="Settings"><svg viewBox="0 0 24 24"><path d="M4 12H20M4 6H20M4 18H20" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
-            
-             <div class="glass-panel">
-                <h2>Settings</h2>
+            <div class="bottom-bar">
+                <button id="gallery-thumbnail-btn"><img id="gallery-thumbnail-img" alt="Last photo thumbnail"></button>
+                <button id="capture-photo" title="Capture Photo"></button>
+                <button id="record-video" title="Record Video"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="currentColor"></circle></svg></button>
+                 <button id="switch-camera" class="icon-button" title="Switch Camera"><svg viewBox="0 0 24 24"><path d="M1 12C1 14.1565 1.77678 16.2239 3.14923 17.7495M1 12C1 9.84346 1.77678 7.77611 3.14923 6.25052M1 12H2M23 12C23 14.1565 22.2232 16.2239 20.8508 17.7495M23 12C23 9.84346 22.2232 7.77611 20.8508 6.25052M23 12H22M12 23C14.1565 23 16.2239 22.2232 17.7495 20.8508M12 23C9.84346 23 7.77611 22.2232 6.25052 20.8508M12 23V22M12 1C14.1565 1 16.2239 1.77678 17.7495 3.14923M12 1C9.84346 1 7.77611 1.77678 6.25052 3.14923M12 1V2M9 16.5V13.5M9 13.5H12M9 13.5L13 9.5M15 7.5V10.5M15 10.5H12M15 10.5L11 14.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings & Tools</h2>
+                <button id="modal-close-btn" class="icon-button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="modal-body">
                  <div class="control-group">
                     <label for="camera-select">Input Device</label>
                     <select id="camera-select"></select>
@@ -465,75 +406,58 @@
                         <option value="sepia(60%) contrast(110%) brightness(90%)">Vintage</option>
                     </select>
                 </div>
-            </div>
-
-             <div class="glass-panel">
-                 <h2>Advanced Tools</h2>
-                <div class="control-group" id="zoom-control">
+                <div class="control-group" id="zoom-control" style="display: none;">
                     <label for="zoom-slider">Zoom</label>
                     <input type="range" id="zoom-slider" min="1" max="10" step="0.1">
                 </div>
-                <div class="control-group" id="exposure-control">
+                <div class="control-group" id="exposure-control" style="display: none;">
                     <label for="exposure-slider">Exposure</label>
                     <input type="range" id="exposure-slider" min="-2" max="2" step="0.1">
                 </div>
-                 <div class="button-grid">
-                    <button id="toggle-grid" title="Toggle Grid"><svg viewBox="0 0 24 24"><path d="M3 3H21M3 9H21M3 15H21M3 21V3M9 21V3M15 21V3M21 21V3" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Grid</span></button>
-                    <button id="mirror-video" title="Mirror Video"><svg viewBox="0 0 24 24"><path d="M10.0002 19L10 16M10.0002 5L10 8M10.0002 12L3 12M10.0002 12L17 12M6 8L3 12L6 16M14 16L17 12L14 8M21 3V21" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Mirror</span></button>
-                    <button id="toggle-qr-scan" title="Scan QR Code"><svg viewBox="0 0 24 24"><path d="M4 4H8V8H4V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16H8V20H4V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 4H20V8H16V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16H20V20H16V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 4V8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 16V20" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10H6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 10H20" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 12V14" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10H16" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12V14" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Scan</span></button>
-                    <button id="burst-mode" title="Burst Mode"><svg viewBox="0 0 24 24"><path d="M3.5 7.5L3 18L10.7932 17.5M13.2068 17.5L21 18L20.5 7.5M10.7932 17.5L12 21L13.2068 17.5M6 12H7M9 12H10M12 12H13M15 12H16M18 12H19M6.5 4.5L9 3L12 5L15 3L17.5 4.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Burst</span></button>
-                    <button id="toggle-torch" title="Toggle Torch" style="display: none;"><svg viewBox="0 0 24 24"><path d="M9.17157 14.8284L14.8284 9.17157M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Torch</span></button>
-                    <button id="analyze-scene" class="ai-button" title="Analyze Scene with AI">✨ Analyze Scene</button>
-                 </div>
+                <div class="control-group">
+                    <label>Actions</label>
+                    <button id="burst-mode" title="Burst Mode"><span>Burst Mode</span></button>
+                </div>
             </div>
         </div>
-
-        <!-- Sidebar for output, gallery, and secondary controls -->
-        <div class="sidebar">
-            <div id="qr-result"></div>
-            <div class="glass-panel">
-                <h2>Output</h2>
-                <div class="preview-area">
-                    <span id="preview-text">Photo Preview</span>
-                    <img id="photo-preview" alt="Latest photo capture">
-                </div>
-                <div class="control-group">
-                    <label for="filename-input">Filename</label>
-                    <input type="text" id="filename-input" value="photo-capture">
-                </div>
-                <div class="control-group">
-                    <label for="format-select">Format</label>
-                    <select id="format-select">
-                        <option value="png">PNG</option>
-                        <option value="jpeg">JPEG</option>
-                    </select>
-                </div>
-                <div class="button-grid-tri">
-                    <button id="download-photo" disabled><svg viewBox="0 0 24 24"><path d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15M12 3V16M12 16L16 11.5M12 16L8 11.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                    <button id="upload-photo" disabled><svg viewBox="0 0 24 24"><path d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15M12 16V3M12 3L16 7.5M12 3L8 7.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                    <button id="get-ideas" class="ai-button" title="Get Creative Ideas with AI" disabled>✨ Get Ideas</button>
-                </div>
-            </div>
-
-            <div class="glass-panel">
+    </div>
+    
+    <!-- Gallery Modal -->
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h2>Gallery</h2>
-                <div id="gallery"></div>
+                <button id="gallery-close-btn" class="icon-button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="modal-body gallery-body">
+                <div class="gallery-preview-container">
+                    <div id="gallery-preview-area">
+                        <span id="gallery-preview-text">Select a photo</span>
+                        <img id="gallery-preview-img" alt="Selected photo">
+                    </div>
+                    <div class="control-group">
+                        <label for="filename-input">Filename</label>
+                        <input type="text" id="filename-input" value="photo-capture">
+                    </div>
+                    <div class="control-group">
+                        <label for="format-select">Format</label>
+                        <select id="format-select">
+                            <option value="png">PNG</option>
+                            <option value="jpeg">JPEG</option>
+                        </select>
+                    </div>
+                    <div class="button-grid">
+                        <button id="download-photo" disabled>Download</button>
+                        <button id="upload-photo" disabled>Upload</button>
+                    </div>
+                </div>
+                <div id="gallery-grid-container">
+                    <div id="gallery-grid"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- AI Response Modal -->
-    <div id="ai-modal">
-        <div class="ai-modal-content">
-            <button id="ai-modal-close" title="Close">
-                <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </button>
-            <h2 id="ai-modal-title">AI Assistant</h2>
-            <div id="ai-modal-body">
-                <!-- Content will be injected by JS -->
-            </div>
-        </div>
-    </div>
 
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -543,43 +467,46 @@
         // --- DOM Elements ---
         const video = document.getElementById('video-preview');
         const canvas = document.getElementById('canvas-capture');
-        const cameraSelect = document.getElementById('camera-select');
         const captureBtn = document.getElementById('capture-photo');
         const recordBtn = document.getElementById('record-video');
-        const downloadBtn = document.getElementById('download-photo');
-        const uploadBtn = document.getElementById('upload-photo');
-        const filenameInput = document.getElementById('filename-input');
-        const formatSelect = document.getElementById('format-select');
-        const gallery = document.getElementById('gallery');
         const errorMessage = document.getElementById('error-message');
         const statusIndicator = document.getElementById('status-indicator');
-        const filterSelect = document.getElementById('filter-select');
         const mirrorBtn = document.getElementById('mirror-video');
         const countdownOverlay = document.getElementById('countdown-overlay');
-        const photoPreview = document.getElementById('photo-preview');
-        const previewText = document.getElementById('preview-text');
-        const resolutionSelect = document.getElementById('resolution-select');
         const toggleGridBtn = document.getElementById('toggle-grid');
         const gridOverlay = document.getElementById('grid-overlay');
         const toggleQrScanBtn = document.getElementById('toggle-qr-scan');
         const qrResult = document.getElementById('qr-result');
         const switchCameraBtn = document.getElementById('switch-camera');
+        const toggleTorchBtn = document.getElementById('toggle-torch');
+        const settingsBtn = document.getElementById('settings-btn');
+        const galleryThumbnailBtn = document.getElementById('gallery-thumbnail-btn');
+        const galleryThumbnailImg = document.getElementById('gallery-thumbnail-img');
+        let qrCanvas = document.createElement('canvas'); 
+
+        // --- Modal DOM Elements ---
+        const settingsModal = document.getElementById('settings-modal');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const galleryModal = document.getElementById('gallery-modal');
+        const galleryCloseBtn = document.getElementById('gallery-close-btn');
+        const galleryGrid = document.getElementById('gallery-grid');
+        const galleryPreviewImg = document.getElementById('gallery-preview-img');
+        const galleryPreviewText = document.getElementById('gallery-preview-text');
+        
+        // --- Modal Controls ---
+        const cameraSelect = document.getElementById('camera-select');
+        const resolutionSelect = document.getElementById('resolution-select');
         const timerSelect = document.getElementById('timer-select');
+        const filterSelect = document.getElementById('filter-select');
         const zoomControl = document.getElementById('zoom-control');
         const zoomSlider = document.getElementById('zoom-slider');
         const exposureControl = document.getElementById('exposure-control');
         const exposureSlider = document.getElementById('exposure-slider');
-        const toggleTorchBtn = document.getElementById('toggle-torch');
         const burstModeBtn = document.getElementById('burst-mode');
-        let qrCanvas = document.createElement('canvas'); 
-
-        // --- AI Feature DOM Elements ---
-        const analyzeSceneBtn = document.getElementById('analyze-scene');
-        const getIdeasBtn = document.getElementById('get-ideas');
-        const aiModal = document.getElementById('ai-modal');
-        const aiModalTitle = document.getElementById('ai-modal-title');
-        const aiModalBody = document.getElementById('ai-modal-body');
-        const aiModalClose = document.getElementById('ai-modal-close');
+        const downloadBtn = document.getElementById('download-photo');
+        const uploadBtn = document.getElementById('upload-photo');
+        const filenameInput = document.getElementById('filename-input');
+        const formatSelect = document.getElementById('format-select');
 
         // --- State Variables ---
         let currentStream = null;
@@ -594,7 +521,6 @@
         let currentDeviceIndex = 0;
 
         // --- Core Camera Functions ---
-
         async function getCameraDevices() {
             try {
                 await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -631,8 +557,7 @@
                 video: {
                     deviceId: deviceId ? { exact: deviceId } : undefined,
                     width: { ideal: width },
-                    height: { ideal: height },
-                    facingMode: 'environment'
+                    height: { ideal: height }
                 }
             };
 
@@ -706,6 +631,7 @@
             const dataUrl = canvas.toDataURL('image/png');
             const newPhoto = { id: Date.now(), dataUrl };
             capturedPhotos.push(newPhoto);
+            updateGalleryThumbnail(newPhoto.dataUrl);
             setFeaturedPhoto(newPhoto.id);
         }
 
@@ -737,6 +663,7 @@
         });
         
         burstModeBtn.addEventListener('click', () => {
+            settingsModal.classList.remove('visible'); // Close modal first
             let burstCount = 0;
             const maxBursts = 5;
             toggleControls(true);
@@ -752,13 +679,20 @@
         });
         
         filterSelect.addEventListener('change', (e) => video.style.filter = e.target.value);
-        mirrorBtn.addEventListener('click', () => video.classList.toggle('mirrored'));
+        mirrorBtn.addEventListener('click', () => {
+            video.classList.toggle('mirrored');
+            mirrorBtn.classList.toggle('active');
+        });
         recordBtn.addEventListener('click', () => (mediaRecorder && mediaRecorder.state === 'recording') ? stopRecording() : startRecording());
-        toggleGridBtn.addEventListener('click', () => gridOverlay.classList.toggle('visible'));
+        toggleGridBtn.addEventListener('click', () => {
+            gridOverlay.classList.toggle('visible');
+            toggleGridBtn.classList.toggle('active');
+        });
+
         toggleQrScanBtn.addEventListener('click', () => {
             if (!isScanningQr) {
                 isScanningQr = true;
-                toggleQrScanBtn.querySelector('span').textContent = 'Stop';
+                toggleQrScanBtn.classList.add('active');
                 qrResult.style.display = 'none';
                 scanQrCode();
             } else {
@@ -783,6 +717,7 @@
                 const track = currentStream.getVideoTracks()[0];
                 const isTorchOn = track.getSettings().torch;
                 await track.applyConstraints({ advanced: [{ torch: !isTorchOn }] });
+                toggleTorchBtn.classList.toggle('active', !isTorchOn);
             } catch (err) { console.error('Torch failed:', err); }
         });
 
@@ -822,138 +757,21 @@
 
                 uploadBtn.disabled = true;
                 
+                // NOTE: This requires the Node.js server from the README to be running on your local machine.
                 const uploadResponse = await fetch('http://localhost:3000/upload', { method: 'POST', body: formData });
 
                 if (!uploadResponse.ok) throw new Error('Server returned an error.');
                 
                 const result = await uploadResponse.json();
-                alert(`Upload successful! File saved as: ${result.filename}`);
+                showError(`Upload successful! File saved as: ${result.filename}`);
 
             } catch (err) {
-                showError('Upload failed. Check console and ensure server is running.');
+                showError('Upload failed. Ensure server is running.');
+                console.error("Upload Error:", err);
             } finally {
                 if(featuredPhotoId) uploadBtn.disabled = false;
             }
         });
-
-        // --- AI Feature Event Handlers ---
-        aiModalClose.addEventListener('click', () => aiModal.classList.remove('visible'));
-        aiModal.addEventListener('click', (e) => {
-            if (e.target === aiModal) aiModal.classList.remove('visible');
-        });
-
-        analyzeSceneBtn.addEventListener('click', () => {
-            if (!currentStream) {
-                showError("Camera is not active.");
-                return;
-            }
-            const tempCanvas = document.createElement('canvas');
-            const context = tempCanvas.getContext('2d');
-            tempCanvas.width = video.videoWidth;
-            tempCanvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
-            
-            const base64ImageData = tempCanvas.toDataURL('image/jpeg').split(',')[1];
-            const prompt = "Analyze the following image and provide a concise, structured summary as a raw JSON object. The object must include these keys: 'main_subject' (a short string), 'objects_detected' (an array of strings), 'setting' (a string like 'Indoor' or 'Outdoor'), and 'dominant_colors' (an array of strings). Do not include any formatting or markdown.";
-            
-            showAiModal("Analyzing Scene...", true);
-            callGeminiVisionAPI(base64ImageData, prompt)
-                .then(text => {
-                    try {
-                        // Clean the response to ensure it's valid JSON
-                        const cleanJsonString = text.replace(/```json|```/g, '').trim();
-                        const data = JSON.parse(cleanJsonString);
-                        const formattedHtml = `
-                            <p><strong>Main Subject:</strong> ${data.main_subject || 'N/A'}</p>
-                            <p><strong>Objects Detected:</strong> ${data.objects_detected ? data.objects_detected.join(', ') : 'N/A'}</p>
-                            <p><strong>Setting:</strong> ${data.setting || 'N/A'}</p>
-                            <p><strong>Dominant Colors:</strong> ${data.dominant_colors ? data.dominant_colors.join(', ') : 'N/A'}</p>
-                        `;
-                        showAiModal("Scene Analysis", false, formattedHtml);
-                    } catch (e) {
-                        console.error("Failed to parse AI response:", e);
-                        // Show the raw text if JSON parsing fails
-                        showAiModal("Scene Analysis (Raw)", false, `Could not parse the structured response. Raw data:\n\n${text}`);
-                    }
-                })
-                .catch(err => showAiModal("Error", false, `Failed to analyze scene: ${err.message}`));
-        });
-
-        getIdeasBtn.addEventListener('click', () => {
-            if (!featuredPhotoId) {
-                showError("Please select a photo from the gallery first.");
-                return;
-            }
-            const photo = capturedPhotos.find(p => p.id === featuredPhotoId);
-            if (!photo) return;
-
-            const base64ImageData = photo.dataUrl.split(',')[1];
-            const prompt = "You are a professional photographer. Suggest 3 creative photo filter or editing ideas for this image to make it look better. Be specific with adjustments like contrast, saturation, or suggest a specific filter style (e.g., 'Vintage Film Look', 'High-Contrast B&W', 'Cyberpunk Neon'). Format your response nicely with headings for each idea.";
-            
-            showAiModal("Getting Ideas...", true);
-            callGeminiVisionAPI(base64ImageData, prompt)
-                .then(text => showAiModal("Creative Ideas", false, text))
-                .catch(err => showAiModal("Error", false, `Failed to get ideas: ${err.message}`));
-        });
-        
-        // --- Gemini API Function ---
-
-        async function callGeminiVisionAPI(base64ImageData, prompt, retries = 3, delay = 1000) {
-            const apiKey = ""; // Will be populated by the environment
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: prompt },
-                        {
-                            inlineData: {
-                                mimeType: "image/jpeg",
-                                data: base64ImageData
-                            }
-                        }
-                    ]
-                }],
-            };
-
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errorBody = await response.json();
-                        throw new Error(`API responded with status ${response.status}: ${errorBody.error.message}`);
-                    }
-
-                    const result = await response.json();
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                    if (text) {
-                        return text;
-                    } else {
-                        throw new Error("No text content returned from API.");
-                    }
-                } catch (error) {
-                    console.error(`Attempt ${i + 1} failed:`, error);
-                    if (i === retries - 1) throw error; // Re-throw last error
-                    await new Promise(res => setTimeout(res, delay * Math.pow(2, i))); // Exponential backoff
-                }
-            }
-        }
-
-        function showAiModal(title, isLoading, content = "") {
-            aiModalTitle.textContent = title;
-            if (isLoading) {
-                aiModalBody.innerHTML = '<div style="display:flex; justify-content:center;"><div class="loader"></div></div>';
-            } else {
-                aiModalBody.innerHTML = content;
-            }
-            aiModal.classList.add('visible');
-        }
-
 
         function scanQrCode() {
             if (!currentStream || !isScanningQr) return;
@@ -974,6 +792,7 @@
                         qrResult.textContent += code.data;
                     }
                     qrResult.style.display = 'block';
+                    setTimeout(() => qrResult.style.display = 'none', 5000);
                 }
             }
             qrAnimationId = requestAnimationFrame(scanQrCode);
@@ -982,7 +801,7 @@
         function stopQrScan() {
             isScanningQr = false;
             cancelAnimationFrame(qrAnimationId);
-            toggleQrScanBtn.querySelector('span').textContent = 'Scan';
+            toggleQrScanBtn.classList.remove('active');
         }
 
         function startRecording() {
@@ -1015,9 +834,13 @@
             statusIndicator.style.display = 'none';
             toggleControls(false, false);
         }
+        
+        function updateGalleryThumbnail(dataUrl) {
+            galleryThumbnailImg.src = dataUrl;
+        }
 
         function updateGallery() {
-            gallery.innerHTML = '';
+            galleryGrid.innerHTML = '';
             capturedPhotos.forEach((photo) => {
                 const container = document.createElement('div'); container.classList.add('thumbnail-container');
                 const img = document.createElement('img');
@@ -1031,15 +854,23 @@
                 deleteBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
                 deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); deletePhoto(photo.id); });
                 
-                container.appendChild(img); container.appendChild(deleteBtn); gallery.appendChild(container);
+                container.appendChild(img); container.appendChild(deleteBtn); galleryGrid.appendChild(container);
             });
-            if (capturedPhotos.length === 0) gallery.innerHTML = `<p style="color:var(--text-secondary-color); text-align:center; width:100%;">Gallery is empty</p>`;
+            if (capturedPhotos.length === 0) galleryGrid.innerHTML = `<p style="color:var(--text-secondary-color); text-align:center; width:100%; grid-column: 1 / -1;">Gallery is empty</p>`;
         }
         
         function deletePhoto(id) {
             capturedPhotos = capturedPhotos.filter(p => p.id !== id);
+            
+            if (capturedPhotos.length > 0) {
+                 updateGalleryThumbnail(capturedPhotos[capturedPhotos.length - 1].dataUrl);
+            } else {
+                updateGalleryThumbnail(''); // clear thumbnail
+            }
+
             if (id === featuredPhotoId) {
-                setFeaturedPhoto(null);
+                const newFeaturedId = capturedPhotos.length > 0 ? capturedPhotos[capturedPhotos.length - 1].id : null;
+                setFeaturedPhoto(newFeaturedId);
             }
             updateGallery();
         }
@@ -1050,14 +881,13 @@
             
             if (hasFeatured) {
                 const photo = capturedPhotos.find(p => p.id === id);
-                photoPreview.src = photo ? photo.dataUrl : '';
-                photoPreview.style.display = 'block'; previewText.style.display = 'none';
+                galleryPreviewImg.src = photo ? photo.dataUrl : '';
+                galleryPreviewImg.style.display = 'block'; galleryPreviewText.style.display = 'none';
             } else {
-                 photoPreview.style.display = 'none'; previewText.style.display = 'block';
+                 galleryPreviewImg.style.display = 'none'; galleryPreviewText.style.display = 'block';
             }
             downloadBtn.disabled = !hasFeatured; 
             uploadBtn.disabled = !hasFeatured;
-            getIdeasBtn.disabled = !hasFeatured;
             updateGallery();
         }
         
@@ -1065,15 +895,18 @@
             captureBtn.disabled = disabled;
             switchCameraBtn.disabled = disabled;
             burstModeBtn.disabled = disabled;
-            cameraSelect.disabled = disabled;
+            cameraSelect.disabled = disabled; // These are in the modal but good to disable
             resolutionSelect.disabled = disabled;
-            toggleQrScanBtn.disabled = disabled;
-            analyzeSceneBtn.disabled = disabled;
+            
+            // disable top bar buttons
+            document.querySelectorAll('.top-bar .icon-button').forEach(btn => btn.disabled = disabled);
+            
             if(!isRecording) recordBtn.disabled = disabled;
         }
 
         function showError(message) {
             errorMessage.textContent = message; errorMessage.style.display = 'block';
+            setTimeout(() => { errorMessage.style.display = 'none'; }, 5000);
         }
 
         function handleError(err) {
@@ -1081,15 +914,29 @@
             let message = "An unexpected error occurred.";
             if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') message = "Camera access was denied. Please allow camera permissions and refresh.";
             else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') message = "No camera was found. Please connect a camera.";
-            else if (err.name === 'OverconstrainedError') message = `The selected resolution is not supported. Try a lower one.`;
+            else if (err.name === 'OverconstrainedError') message = `The selected resolution is not supported by your device. Try a lower one.`;
             showError(message);
         }
+        
+        // --- Modal Toggles ---
+        settingsBtn.addEventListener('click', () => settingsModal.classList.add('visible'));
+        modalCloseBtn.addEventListener('click', () => settingsModal.classList.remove('visible'));
+        settingsModal.addEventListener('click', (e) => { if(e.target === settingsModal) settingsModal.classList.remove('visible'); });
 
+        galleryThumbnailBtn.addEventListener('click', () => {
+            if(capturedPhotos.length > 0) {
+                 updateGallery();
+                 galleryModal.classList.add('visible');
+            }
+        });
+        galleryCloseBtn.addEventListener('click', () => galleryModal.classList.remove('visible'));
+        galleryModal.addEventListener('click', (e) => { if(e.target === galleryModal) galleryModal.classList.remove('visible'); });
+
+
+        // --- Initial Load ---
         getCameraDevices();
     });
     </script>
 </body>
 </html>
-
-
 
