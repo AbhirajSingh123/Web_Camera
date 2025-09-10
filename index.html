@@ -3,19 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Modern Camera App</title>
+
+    <!-- SEO Meta Tags -->
+    <title>Online Camera - Capture & Record Instantly | WebCamera App</title>
+    <meta name="description" content="Use your device's camera online for free! Instantly capture photos, record videos, switch cameras, scan QR codes, and apply live filters. No installation needed.">
+    <meta name="keywords" content="online camera, webcam app, camera app, take photo online, record video online, free webcam, qr scanner online">
+    <!-- IMPORTANT: Replace https://your-domain.com/ with your actual website URL -->
+    <link rel="canonical" href="https://abhirajsingh123.github.io/Web_Camera/" />
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://abhirajsingh123.github.io/Web_Camera/">
+    <meta property="og:title" content="Online Camera - Capture & Record Instantly | WebCamera App">
+    <meta property="og:description" content="Use your device's camera online for free! Instantly capture photos, record videos, switch cameras, scan QR codes, and apply live filters.">
+    <!-- IMPORTANT: Create a 1200x630px image and replace the URL below -->
+    <meta property="og:image" content="https://abhirajsingh123.github.io/Web_Camera/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://abhirajsingh123.github.io/Web_Camera/">
+    <meta property="twitter:title" content="Online Camera - Capture & Record Instantly | WebCamera App">
+    <meta property="twitter:description" content="Use your device's camera online for free! Instantly capture photos, record videos, switch cameras, scan QR codes, and apply live filters.">
+    <meta property="twitter:image" content="https://abhirajsingh123.github.io/Web_Camera/og-image.png">
+    
+    <!-- Favicon (using an emoji) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📸</text></svg>">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- JSON-LD Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "WebCamera App",
+      "url": "https://abhirajsingh123.github.io/Web_Camera/",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0"
+      },
+      "description": "A free online camera application to capture photos and record videos directly from your browser with various features like live filters, QR scanning, and more.",
+      "featureList": [
+        "Live Camera Preview",
+        "Photo Capture & Instant Download",
+        "Video Recording",
+        "Live Filters",
+        "QR Code Scanner",
+        "Camera Switching (Front/Back)",
+        "Adjustable Resolution",
+        "Burst Mode"
+      ]
+    }
+    </script>
+
     <style>
         :root {
             --bg-color: #000;
-            --surface-color: rgba(25, 25, 25, 0.7);
-            --border-color: rgba(255, 255, 255, 0.2);
+            --surface-color: rgba(20, 20, 25, 0.65);
+            --border-color: rgba(255, 255, 255, 0.15);
             --text-color: #f0f0f0;
             --text-secondary-color: #a0a0a0;
-            --accent-primary: #9370DB; /* Medium Purple */
-            --accent-secondary: #FF00FF; /* Magenta */
+            --accent-primary: #007BFF; /* Electric Blue */
+            --accent-secondary: #8A2BE2; /* Blue Violet */
             --danger-color: #ff3b30;
             --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
@@ -133,7 +187,7 @@
             background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
             color: #fff;
             border-color: transparent;
-            box-shadow: 0 4px 15px rgba(147, 112, 219, 0.4);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
         }
         .icon-button:disabled { opacity: 0.4; cursor: not-allowed; }
         .icon-button svg { width: 24px; height: 24px; stroke-width: 2; stroke: currentColor; fill: none; }
@@ -165,17 +219,6 @@
             color: var(--accent-secondary);
         }
         #record-video.recording { background-color: var(--accent-secondary); }
-
-        #gallery-thumbnail-btn {
-            width: 50px;
-            height: 50px;
-            padding: 0;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            overflow: hidden;
-            background-color: rgba(25,25,25,0.5);
-        }
-        #gallery-thumbnail-btn img { width: 100%; height: 100%; object-fit: cover; }
         
         #error-message {
             position: absolute; top: 60px; left: 50%;
@@ -191,7 +234,7 @@
             transform: translate(-50%, -50%);
             padding: 1rem; border-radius: 8px;
             text-align: center; display: none; word-wrap: break-word;
-            color: var(--text-color); background-color: rgba(147, 112, 219, 0.8);
+            color: var(--text-color); background-color: rgba(0, 123, 255, 0.8);
             z-index: 100;
         }
         #qr-result a { color: #fff; text-decoration: underline; }
@@ -239,7 +282,7 @@
             margin-bottom: 1.5rem; flex-shrink: 0;
         }
         .modal-header h2 { margin: 0; }
-        #modal-close-btn, #gallery-close-btn { background: none; border: none; }
+        #modal-close-btn { background: none; border: none; }
         
         .modal-body { overflow-y: auto; }
 
@@ -251,7 +294,7 @@
         }
         select:focus, input[type="text"]:focus {
             outline: none; border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(147, 112, 219, 0.2);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
         }
         
         input[type=range] {
@@ -266,71 +309,23 @@
             -webkit-appearance: none; height: 20px; width: 20px;
             border-radius: 50%; background: var(--accent-primary);
             cursor: pointer; margin-top: -7px; 
-            box-shadow: 0 0 8px rgba(147, 112, 219, 0.5);
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
         }
 
         .control-group { margin-bottom: 1.25rem; }
         .control-group:last-child { margin-bottom: 0; }
-        .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-        .button-grid button, .control-group button {
+        .control-group button {
              background: rgba(255, 255, 255, 0.1);
              border: 1px solid var(--border-color);
+             width: 100%;
+             padding: 0.75rem;
+             border-radius: 8px;
         }
-        .button-grid button:hover, .control-group button:hover {
+        .control-group button:hover {
              background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
              color: #fff;
              border-color: transparent;
         }
-
-
-        /* --- Gallery Modal Specifics --- */
-        #gallery-modal .modal-content { max-width: 90vw; }
-        .gallery-body { display: flex; gap: 1.5rem; flex-grow: 1; min-height: 0; }
-
-        .gallery-preview-container {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        #gallery-preview-area {
-            width: 100%;
-            flex-grow: 1;
-            background-color: rgba(0,0,0,0.2);
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
-            color: var(--text-secondary-color); overflow: hidden;
-        }
-        #gallery-preview-img { width: 100%; height: 100%; object-fit: contain; display: none; }
-
-        #gallery-grid-container {
-            flex: 1; min-width: 200px;
-            display: flex; flex-direction: column;
-        }
-        #gallery-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-            gap: 1rem; overflow-y: auto;
-        }
-        .thumbnail-container { position: relative; }
-        .thumbnail {
-            width: 100%; aspect-ratio: 1/1; object-fit: cover;
-            border-radius: 8px; cursor: pointer;
-            border: 2px solid transparent; transition: all 0.2s;
-        }
-        .thumbnail:hover { border-color: var(--text-secondary-color); }
-        .thumbnail.featured { border-color: var(--accent-primary); box-shadow: 0 0 12px rgba(147, 112, 219, 0.5); }
-        .delete-btn {
-            position: absolute; top: 4px; right: 4px;
-            background-color: rgba(255, 59, 48, 0.8);
-            border: none; border-radius: 50%;
-            width: 24px; height: 24px; padding: 0;
-            opacity: 0; transition: opacity 0.2s;
-            color: #fff;
-        }
-        .thumbnail-container:hover .delete-btn { opacity: 1; }
-        .delete-btn:hover { background-color: var(--danger-color); }
-
     </style>
 </head>
 <body>
@@ -350,17 +345,17 @@
 
         <div class="controls-overlay">
             <div class="top-bar">
-                <button id="toggle-grid" class="icon-button" title="Toggle Grid"><svg viewBox="0 0 24 24"><path d="M3 3H21M3 9H21M3 15H21M3 21V3M9 21V3M15 21V3M21 21V3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                <button id="mirror-video" class="icon-button" title="Mirror Video"><svg viewBox="0 0 24 24"><path d="M10.0002 19L10 16M10.0002 5L10 8M10.0002 12L3 12M10.0002 12L17 12M6 8L3 12L6 16M14 16L17 12L14 8M21 3V21" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                <button id="toggle-torch" class="icon-button" title="Toggle Torch" style="display: none;"><svg viewBox="0 0 24 24"><path d="M9.17157 14.8284L14.8284 9.17157M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                <button id="toggle-qr-scan" class="icon-button" title="Scan QR Code"><svg viewBox="0 0 24 24"><path d="M4 4H8V8H4V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16H8V20H4V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 4H20V8H16V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16H20V20H16V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 4V8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 16V20" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10H6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 10H20" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 12V14" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10H16" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12V14" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                <button id="settings-btn" class="icon-button" title="Settings"><svg viewBox="0 0 24 24"><path d="M4 12H20M4 6H20M4 18H20" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="toggle-grid" class="icon-button" title="Toggle Grid" aria-label="Toggle composition grid"><svg viewBox="0 0 24 24"><path d="M3 3H21M3 9H21M3 15H21M3 21V3M9 21V3M15 21V3M21 21V3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="mirror-video" class="icon-button" title="Mirror Video" aria-label="Mirror video feed"><svg viewBox="0 0 24 24"><path d="M10.0002 19L10 16M10.0002 5L10 8M10.0002 12L3 12M10.0002 12L17 12M6 8L3 12L6 16M14 16L17 12L14 8M21 3V21" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="toggle-torch" class="icon-button" title="Toggle Torch" aria-label="Toggle camera flash" style="display: none;"><svg viewBox="0 0 24 24"><path d="M9.17157 14.8284L14.8284 9.17157M12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21Z" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="toggle-qr-scan" class="icon-button" title="Scan QR Code" aria-label="Toggle QR code scanner"><svg viewBox="0 0 24 24"><path d="M4 4H8V8H4V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16H8V20H4V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 4H20V8H16V4Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 16H20V20H16V16Z" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 4V8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 6H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 16V20" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 18H14" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10H6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 10H20" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 12V14" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10H16" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12V14" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="settings-btn" class="icon-button" title="Settings" aria-label="Open settings"><svg viewBox="0 0 24 24"><path d="M4 12H20M4 6H20M4 18H20" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
             <div class="bottom-bar">
-                <button id="gallery-thumbnail-btn"><img id="gallery-thumbnail-img" alt="Last photo thumbnail"></button>
-                <button id="capture-photo" title="Capture Photo"></button>
-                <button id="record-video" title="Record Video"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="currentColor"></circle></svg></button>
-                 <button id="switch-camera" class="icon-button" title="Switch Camera"><svg viewBox="0 0 24 24"><path d="M1 12C1 14.1565 1.77678 16.2239 3.14923 17.7495M1 12C1 9.84346 1.77678 7.77611 3.14923 6.25052M1 12H2M23 12C23 14.1565 22.2232 16.2239 20.8508 17.7495M23 12C23 9.84346 22.2232 7.77611 20.8508 6.25052M23 12H22M12 23C14.1565 23 16.2239 22.2232 17.7495 20.8508M12 23C9.84346 23 7.77611 22.2232 6.25052 20.8508M12 23V22M12 1C14.1565 1 16.2239 1.77678 17.7495 3.14923M12 1C9.84346 1 7.77611 1.77678 6.25052 3.14923M12 1V2M9 16.5V13.5M9 13.5H12M9 13.5L13 9.5M15 7.5V10.5M15 10.5H12M15 10.5L11 14.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <div style="width: 50px; height: 50px;"></div> <!-- Placeholder for symmetry -->
+                <button id="capture-photo" title="Capture Photo" aria-label="Capture Photo"></button>
+                <button id="record-video" title="Record Video" aria-label="Start or stop video recording"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6" fill="currentColor"></circle></svg></button>
+                 <button id="switch-camera" class="icon-button" title="Switch Camera" aria-label="Switch to next camera"><svg viewBox="0 0 24 24"><path d="M1 12C1 14.1565 1.77678 16.2239 3.14923 17.7495M1 12C1 9.84346 1.77678 7.77611 3.14923 6.25052M1 12H2M23 12C23 14.1565 22.2232 16.2239 20.8508 17.7495M23 12C23 9.84346 22.2232 7.77611 20.8508 6.25052M23 12H22M12 23C14.1565 23 16.2239 22.2232 17.7495 20.8508M12 23C9.84346 23 7.77611 22.2232 6.25052 20.8508M12 23V22M12 1C14.1565 1 16.2239 1.77678 17.7495 3.14923M12 1C9.84346 1 7.77611 1.77678 6.25052 3.14923M12 1V2M9 16.5V13.5M9 13.5H12M9 13.5L13 9.5M15 7.5V10.5M15 10.5H12M15 10.5L11 14.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
         </div>
     </div>
@@ -370,7 +365,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Settings & Tools</h2>
-                <button id="modal-close-btn" class="icon-button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button id="modal-close-btn" class="icon-button" aria-label="Close settings"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
             <div class="modal-body">
                  <div class="control-group">
@@ -403,6 +398,9 @@
                         <option value="sepia(100%)">Sepia</option>
                         <option value="invert(100%)">Invert</option>
                         <option value="contrast(200%)">Contrast</option>
+                        <option value="brightness(1.2) saturate(1.2) hue-rotate(-10deg)">Dreamy</option>
+                        <option value="grayscale(1) contrast(1.5)">Noir</option>
+                        <option value="saturate(1.5) contrast(1.2)">Lomo</option>
                         <option value="sepia(60%) contrast(110%) brightness(90%)">Vintage</option>
                     </select>
                 </div>
@@ -421,43 +419,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Gallery Modal -->
-    <div id="gallery-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Gallery</h2>
-                <button id="gallery-close-btn" class="icon-button"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            </div>
-            <div class="modal-body gallery-body">
-                <div class="gallery-preview-container">
-                    <div id="gallery-preview-area">
-                        <span id="gallery-preview-text">Select a photo</span>
-                        <img id="gallery-preview-img" alt="Selected photo">
-                    </div>
-                    <div class="control-group">
-                        <label for="filename-input">Filename</label>
-                        <input type="text" id="filename-input" value="photo-capture">
-                    </div>
-                    <div class="control-group">
-                        <label for="format-select">Format</label>
-                        <select id="format-select">
-                            <option value="png">PNG</option>
-                            <option value="jpeg">JPEG</option>
-                        </select>
-                    </div>
-                    <div class="button-grid">
-                        <button id="download-photo" disabled>Download</button>
-                        <button id="upload-photo" disabled>Upload</button>
-                    </div>
-                </div>
-                <div id="gallery-grid-container">
-                    <div id="gallery-grid"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
 
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
@@ -480,18 +441,11 @@
         const switchCameraBtn = document.getElementById('switch-camera');
         const toggleTorchBtn = document.getElementById('toggle-torch');
         const settingsBtn = document.getElementById('settings-btn');
-        const galleryThumbnailBtn = document.getElementById('gallery-thumbnail-btn');
-        const galleryThumbnailImg = document.getElementById('gallery-thumbnail-img');
         let qrCanvas = document.createElement('canvas'); 
 
         // --- Modal DOM Elements ---
         const settingsModal = document.getElementById('settings-modal');
         const modalCloseBtn = document.getElementById('modal-close-btn');
-        const galleryModal = document.getElementById('gallery-modal');
-        const galleryCloseBtn = document.getElementById('gallery-close-btn');
-        const galleryGrid = document.getElementById('gallery-grid');
-        const galleryPreviewImg = document.getElementById('gallery-preview-img');
-        const galleryPreviewText = document.getElementById('gallery-preview-text');
         
         // --- Modal Controls ---
         const cameraSelect = document.getElementById('camera-select');
@@ -503,17 +457,11 @@
         const exposureControl = document.getElementById('exposure-control');
         const exposureSlider = document.getElementById('exposure-slider');
         const burstModeBtn = document.getElementById('burst-mode');
-        const downloadBtn = document.getElementById('download-photo');
-        const uploadBtn = document.getElementById('upload-photo');
-        const filenameInput = document.getElementById('filename-input');
-        const formatSelect = document.getElementById('format-select');
 
         // --- State Variables ---
         let currentStream = null;
         let mediaRecorder = null;
         let recordedChunks = [];
-        let capturedPhotos = [];
-        let featuredPhotoId = null;
         let countdownInterval = null;
         let isScanningQr = false;
         let qrAnimationId = null;
@@ -628,11 +576,12 @@
             context.filter = video.style.filter;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             
+            // --- Instant Download Logic ---
             const dataUrl = canvas.toDataURL('image/png');
-            const newPhoto = { id: Date.now(), dataUrl };
-            capturedPhotos.push(newPhoto);
-            updateGalleryThumbnail(newPhoto.dataUrl);
-            setFeaturedPhoto(newPhoto.id);
+            const link = document.createElement('a');
+            link.download = `photo-${Date.now()}.png`;
+            link.href = dataUrl;
+            link.click();
         }
 
         captureBtn.addEventListener('click', () => {
@@ -721,58 +670,6 @@
             } catch (err) { console.error('Torch failed:', err); }
         });
 
-        downloadBtn.addEventListener('click', () => {
-            if (!featuredPhotoId) { showError("No photo selected to download."); return; }
-            const photo = capturedPhotos.find(p => p.id === featuredPhotoId);
-            if (!photo) return;
-            
-            const format = formatSelect.value;
-            const mimeType = `image/${format}`;
-            const filename = `${filenameInput.value || 'photo-capture'}.${format}`;
-
-            const img = new Image();
-            img.onload = () => {
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = img.width; tempCanvas.height = img.height;
-                tempCanvas.getContext('2d').drawImage(img, 0, 0);
-                
-                const link = document.createElement('a');
-                link.download = filename;
-                link.href = tempCanvas.toDataURL(mimeType, 0.9);
-                link.click();
-            };
-            img.src = photo.dataUrl;
-        });
-
-        uploadBtn.addEventListener('click', async () => {
-            if (!featuredPhotoId) { showError("No photo selected to upload."); return; }
-            const photo = capturedPhotos.find(p => p.id === featuredPhotoId);
-            if (!photo) return;
-            
-            try {
-                const response = await fetch(photo.dataUrl);
-                const blob = await response.blob();
-                const formData = new FormData();
-                formData.append('photo', blob, `${filenameInput.value || 'photo-capture'}.png`);
-
-                uploadBtn.disabled = true;
-                
-                // NOTE: This requires the Node.js server from the README to be running on your local machine.
-                const uploadResponse = await fetch('http://localhost:3000/upload', { method: 'POST', body: formData });
-
-                if (!uploadResponse.ok) throw new Error('Server returned an error.');
-                
-                const result = await uploadResponse.json();
-                showError(`Upload successful! File saved as: ${result.filename}`);
-
-            } catch (err) {
-                showError('Upload failed. Ensure server is running.');
-                console.error("Upload Error:", err);
-            } finally {
-                if(featuredPhotoId) uploadBtn.disabled = false;
-            }
-        });
-
         function scanQrCode() {
             if (!currentStream || !isScanningQr) return;
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -834,71 +731,14 @@
             statusIndicator.style.display = 'none';
             toggleControls(false, false);
         }
-        
-        function updateGalleryThumbnail(dataUrl) {
-            galleryThumbnailImg.src = dataUrl;
-        }
 
-        function updateGallery() {
-            galleryGrid.innerHTML = '';
-            capturedPhotos.forEach((photo) => {
-                const container = document.createElement('div'); container.classList.add('thumbnail-container');
-                const img = document.createElement('img');
-                img.src = photo.dataUrl; img.classList.add('thumbnail');
-                if (photo.id === featuredPhotoId) img.classList.add('featured');
-                img.addEventListener('click', () => setFeaturedPhoto(photo.id));
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.classList.add('delete-btn');
-                deleteBtn.title = 'Delete photo';
-                deleteBtn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6L18 18" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-                deleteBtn.addEventListener('click', (e) => { e.stopPropagation(); deletePhoto(photo.id); });
-                
-                container.appendChild(img); container.appendChild(deleteBtn); galleryGrid.appendChild(container);
-            });
-            if (capturedPhotos.length === 0) galleryGrid.innerHTML = `<p style="color:var(--text-secondary-color); text-align:center; width:100%; grid-column: 1 / -1;">Gallery is empty</p>`;
-        }
-        
-        function deletePhoto(id) {
-            capturedPhotos = capturedPhotos.filter(p => p.id !== id);
-            
-            if (capturedPhotos.length > 0) {
-                 updateGalleryThumbnail(capturedPhotos[capturedPhotos.length - 1].dataUrl);
-            } else {
-                updateGalleryThumbnail(''); // clear thumbnail
-            }
-
-            if (id === featuredPhotoId) {
-                const newFeaturedId = capturedPhotos.length > 0 ? capturedPhotos[capturedPhotos.length - 1].id : null;
-                setFeaturedPhoto(newFeaturedId);
-            }
-            updateGallery();
-        }
-
-        function setFeaturedPhoto(id) {
-            featuredPhotoId = id;
-            const hasFeatured = !!featuredPhotoId;
-            
-            if (hasFeatured) {
-                const photo = capturedPhotos.find(p => p.id === id);
-                galleryPreviewImg.src = photo ? photo.dataUrl : '';
-                galleryPreviewImg.style.display = 'block'; galleryPreviewText.style.display = 'none';
-            } else {
-                 galleryPreviewImg.style.display = 'none'; galleryPreviewText.style.display = 'block';
-            }
-            downloadBtn.disabled = !hasFeatured; 
-            uploadBtn.disabled = !hasFeatured;
-            updateGallery();
-        }
-        
         function toggleControls(disabled, isRecording = false) {
             captureBtn.disabled = disabled;
             switchCameraBtn.disabled = disabled;
             burstModeBtn.disabled = disabled;
-            cameraSelect.disabled = disabled; // These are in the modal but good to disable
+            cameraSelect.disabled = disabled; 
             resolutionSelect.disabled = disabled;
             
-            // disable top bar buttons
             document.querySelectorAll('.top-bar .icon-button').forEach(btn => btn.disabled = disabled);
             
             if(!isRecording) recordBtn.disabled = disabled;
@@ -922,16 +762,6 @@
         settingsBtn.addEventListener('click', () => settingsModal.classList.add('visible'));
         modalCloseBtn.addEventListener('click', () => settingsModal.classList.remove('visible'));
         settingsModal.addEventListener('click', (e) => { if(e.target === settingsModal) settingsModal.classList.remove('visible'); });
-
-        galleryThumbnailBtn.addEventListener('click', () => {
-            if(capturedPhotos.length > 0) {
-                 updateGallery();
-                 galleryModal.classList.add('visible');
-            }
-        });
-        galleryCloseBtn.addEventListener('click', () => galleryModal.classList.remove('visible'));
-        galleryModal.addEventListener('click', (e) => { if(e.target === galleryModal) galleryModal.classList.remove('visible'); });
-
 
         // --- Initial Load ---
         getCameraDevices();
